@@ -88,6 +88,17 @@ AC_ARG_ENABLE([dfltcc],
   [gl_dfltcc=no]
 )
 
+AC_ARG_ENABLE([rare-deflate],
+  [AS_HELP_STRING([--enable-rare-deflate],
+     [turn on to disable memzero (pre 1.5 bug) to match version uses by Rareware])],
+  [case $enableval in
+     yes|no) ;;
+     *)      AC_MSG_ERROR([bad value $enableval for rare-deflate option]) ;;
+   esac
+   gl_rare_deflate=$enableval],
+  [gl_rare_deflate=no]
+)
+
 # gl_GCC_VERSION_IFELSE([major], [minor], [run-if-found], [run-if-not-found])
 # ------------------------------------------------
 # If $CPP is gcc-MAJOR.MINOR or newer, then run RUN-IF-FOUND.
@@ -203,6 +214,11 @@ if test "$gl_dfltcc" = yes; then
     [Use DEFLATE COMPRESSION CALL instruction on IBM Z machines.])
 fi
 AM_CONDITIONAL([IBM_Z_DFLTCC],  [test "$gl_dfltcc" = yes])
+
+if test "$gl_rare_deflate" = yes; then
+  AC_DEFINE([RARE_DEFLATE], ,
+    [Omit call to memzero the window to mimick pre 1.5 behaviour])
+fi
 
 # cc -E produces incorrect asm files on SVR4, so postprocess it.
 ASCPPPOST="sed '/^ *\\#/d; s,//.*,,; s/% /%/g; s/\\. /./g'"

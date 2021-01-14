@@ -574,8 +574,10 @@ local void fill_window()
         n = read_buf((char*)window+strstart+lookahead, more);
         if (n == 0 || n == (unsigned)EOF) {
             eofile = 1;
+#ifndef RARE_DEFLATE
             /* Don't let garbage pollute the dictionary.  */
             memzero (window + strstart + lookahead, MIN_MATCH - 1);
+#endif
         } else {
             lookahead += n;
         }
